@@ -51,9 +51,14 @@ router.post("/:id/complete", async (req, res) => {
             );
             res.status(201).json(result.rows[0]);
         } catch (error) {
-            if (error.code === '23503') { // Foreign key violation
+            if (error.code === "23505") {
                 return res.status(409).json({ error: "Habit already completed today" });
             }
+
+            if (error.code === "23503") {
+                return res.status(404).json({ error: "Habit not found" });
+            }
+
             res.status(500).json({ error: "Failed to complete habit" });
         }
 });
