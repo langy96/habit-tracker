@@ -8,6 +8,7 @@ function App() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
+  const [streaks, setStreaks] = useState({});
 
   async function fetchHabits() {
     try {
@@ -19,6 +20,18 @@ function App() {
     } catch (error) {
       setError(error.message);
     }
+}
+
+async function fetchStreak(id) {
+  try {
+    setError("");
+    const res = await fetch(`${API_URL}/habits/${id}/streak`);
+    if (!res.ok) throw new Error("Failed to fetch streak");
+    const data = await res.json();
+    setStreaks((prev) => ({ ...prev, [id]: data.streak }));
+  } catch (error) {
+    setError(error.message);
+  }
 }
 
 async function createHabit(e) {
@@ -90,6 +103,8 @@ async function completeHabit(id) {
               <p>{habit.description}</p>
             </div>
             <button onClick={() => completeHabit(habit.id)}>Mark Complete</button>
+            <button onClick={() => fetchStreak(habit.id)}>Show Streak</button>
+            {streaks[habit.id] !== undefined && <p>Streak: {streaks[habit.id]} day(s)</p>}
           </li>
         ))}
       </ul>
