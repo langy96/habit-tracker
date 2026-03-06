@@ -28,8 +28,12 @@ A simple full-stack PERN habit tracker project.
 - React frontend connected to Express API
 - PostgreSQL persistence with `habits` and `habit_logs`
 - Create habit, list habits, mark complete for today
+- Unmark today's completion
+- Edit habit name/description
+- Delete habits
 - Duplicate completion protection per day
-- Streak endpoint and streak display in UI
+- Streak endpoint with show/hide toggle in UI
+- Responsive card-based UI with improved visual design
 - Basic security: `helmet`, CORS origin restriction, env vars
 - Minimal tests: backend health route + frontend render test
 
@@ -37,9 +41,8 @@ A simple full-stack PERN habit tracker project.
 
 - User accounts / JWT auth
 - Multi-user data isolation
-- Edit/delete habits polish
 - Full test coverage and CI pipeline
-- Production UX polish
+- Per-habit completion history view
 
 ## Local Setup
 
@@ -61,7 +64,7 @@ Create `server/.env`:
 ```env
 PORT=4000
 DATABASE_URL=postgresql://<user>:<password>@localhost:5432/habit_tracker
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=http://localhost:5173,http://localhost:5174
 ```
 
 ### Frontend
@@ -100,7 +103,10 @@ npm test -- --run
 - `GET /api/health/db`
 - `GET /api/habits`
 - `POST /api/habits`
+- `PUT /api/habits/:id`
+- `DELETE /api/habits/:id`
 - `POST /api/habits/:id/complete`
+- `DELETE /api/habits/:id/complete`
 - `GET /api/habits/:id/streak`
 
 ## Notes
