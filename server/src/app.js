@@ -22,7 +22,8 @@ app.use(
       if (!origin) return callback(null, true);
 
       const isRenderDomain = /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
-      if (allowedOrigins.includes(origin) || isRenderDomain) {
+      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+      if (allowedOrigins.includes(origin) || isRenderDomain || isLocalhost) {
         return callback(null, true);
       }
 
