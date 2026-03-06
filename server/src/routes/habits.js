@@ -120,4 +120,36 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  const habitId = Number(req.params.id);
+  const { name, description = "" } = req.body;
+
+  if (Number.isNaN(habitId)) {
+    return res.status(400).json({ error: "Invalid habit ID" });
+  }
+
+  if (!name || name.trim().length === 0) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE habits
+       SET name = $1,
+           description = $2
+       WHERE id = $3
+       RETURNING id, name, description, created_at`,
+      [name.trim(), description.trim(), habitId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Habit not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update habit" });
+  }
+});
+
 module.exports = router;

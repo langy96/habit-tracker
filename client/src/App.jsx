@@ -95,6 +95,30 @@ async function deleteHabit(id) {
   }
 }
 
+async function updateHabit(id, updatedName, updatedDescription) {
+  try {
+    setError("");
+    const res = await fetch(`${API_URL}/habits/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: updatedName, description: updatedDescription }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Failed to update habit");
+    }
+
+    const savedHabit = await res.json();
+    setHabits((prev) =>
+      prev.map((habit) => (habit.id === id ? savedHabit : habit))
+    );
+  } catch (error) {
+    setError(error.message);
+    throw error;
+  }
+}
+
   useEffect(() => {
     fetchHabits();
   }, []);
@@ -119,6 +143,7 @@ async function deleteHabit(id) {
         onComplete={completeHabit}
         onShowStreak={fetchStreak}
         onDelete={deleteHabit}
+        onEdit={updateHabit}
       />
     </main>
   );
