@@ -2,6 +2,10 @@
 
 A simple full-stack PERN habit tracker project.
 
+## Mockup
+
+![habit-tracker-mockup](image.png)
+
 ## Live Demo
 
 - Frontend: https://jamies-habit-tracker.onrender.com
