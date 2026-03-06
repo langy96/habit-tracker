@@ -6,9 +6,14 @@ const pool = require("./db/pool");
 const habitsRouter = require("./routes/habits");
 
 const app = express();
+const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
 
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigin,
+  })
+);
 app.use(express.json());
 app.use("/api/habits", habitsRouter);
 
