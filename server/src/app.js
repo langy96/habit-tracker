@@ -6,12 +6,28 @@ const pool = require("./db/pool");
 const habitsRouter = require("./routes/habits");
 
 const app = express();
-const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+const configuredOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const defaultOrigins = ["http://localhost:5173"];
+const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
 
 app.use(helmet());
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin(origin, callback) {
+      // Allow non-browser requests and same-origin requests without an Origin header.
+      if (!origin) return callback(null, true);
+
+      const isRenderDomain = /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
+      if (allowedOrigins.includes(origin) || isRenderDomain) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
   })
 );
 app.use(express.json());
