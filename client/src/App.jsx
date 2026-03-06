@@ -72,6 +72,29 @@ async function completeHabit(id) {
   }
 }
 
+async function deleteHabit(id) {
+  try {
+    setError("");
+    const res = await fetch(`${API_URL}/habits/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Failed to delete habit");
+    }
+
+    setHabits((prev) => prev.filter((habit) => habit.id !== id));
+    setStreaks((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  } catch (error) {
+    setError(error.message);
+  }
+}
+
   useEffect(() => {
     fetchHabits();
   }, []);
@@ -95,6 +118,7 @@ async function completeHabit(id) {
         streaks={streaks}
         onComplete={completeHabit}
         onShowStreak={fetchStreak}
+        onDelete={deleteHabit}
       />
     </main>
   );

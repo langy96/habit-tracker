@@ -95,4 +95,29 @@ router.get("/:id/streak", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  const habitId = Number(req.params.id);
+
+  if (Number.isNaN(habitId)) {
+    return res.status(400).json({ error: "Invalid habit ID" });
+  }
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM habits
+       WHERE id = $1
+       RETURNING id`,
+      [habitId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Habit not found" });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete habit" });
+  }
+});
+
 module.exports = router;
