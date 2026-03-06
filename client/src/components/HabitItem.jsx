@@ -1,6 +1,15 @@
 import { useState } from "react";
 
-function HabitItem({ habit, streak, onComplete, onUncomplete, onShowStreak, onDelete, onEdit }) {
+function HabitItem({
+  habit,
+  streak,
+  onComplete,
+  onUncomplete,
+  onShowStreak,
+  onHideStreak,
+  onDelete,
+  onEdit,
+}) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(habit.name);
   const [editDescription, setEditDescription] = useState(habit.description || "");
@@ -50,7 +59,11 @@ function HabitItem({ habit, streak, onComplete, onUncomplete, onShowStreak, onDe
       ) : (
         <button onClick={() => onComplete(habit.id)}>Mark Complete</button>
       )}
-      <button onClick={() => onShowStreak(habit.id)}>Show Streak</button>
+      {streak !== undefined ? (
+        <button onClick={() => onHideStreak(habit.id)}>Hide Streak</button>
+      ) : (
+        <button onClick={() => onShowStreak(habit.id)}>Show Streak</button>
+      )}
       {isEditing ? (
         <>
           <button onClick={handleSave}>Save</button>

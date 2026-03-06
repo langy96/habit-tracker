@@ -1,6 +1,6 @@
 import HabitItem from "./HabitItem";
 
-function HabitList({ habits, streaks, onComplete, onUncomplete, onShowStreak, onDelete, onEdit }) {
+function HabitList({ habits, streaks, onComplete, onUncomplete, onShowStreak, onHideStreak, onDelete, onEdit }) {
   return (
     <ul className="habit-list">
       {habits.map((habit) => (
@@ -11,6 +11,7 @@ function HabitList({ habits, streaks, onComplete, onUncomplete, onShowStreak, on
           onComplete={onComplete}
           onUncomplete={onUncomplete}
           onShowStreak={onShowStreak}
+          onHideStreak={onHideStreak}
           onDelete={onDelete}
           onEdit={onEdit}
         />

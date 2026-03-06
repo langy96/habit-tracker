@@ -36,6 +36,14 @@ async function fetchStreak(id) {
   }
 }
 
+function hideStreak(id) {
+  setStreaks((prev) => {
+    const next = { ...prev };
+    delete next[id];
+    return next;
+  });
+}
+
 async function createHabit(e) {
   e.preventDefault();
   try {
@@ -170,6 +178,7 @@ async function updateHabit(id, updatedName, updatedDescription) {
         onComplete={completeHabit}
         onUncomplete={uncompleteHabit}
         onShowStreak={fetchStreak}
+        onHideStreak={hideStreak}
         onDelete={deleteHabit}
         onEdit={updateHabit}
       />
