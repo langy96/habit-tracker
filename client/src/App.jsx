@@ -66,7 +66,32 @@ async function completeHabit(id) {
       const data = await res.json();
       throw new Error(data.error || "Failed to complete habit");
     }
-    alert("Completed for today");
+    setHabits((prev) =>
+      prev.map((habit) =>
+        habit.id === id ? { ...habit, completed_today: true } : habit
+      )
+    );
+  } catch (error) {
+    setError(error.message);
+  }
+}
+
+async function uncompleteHabit(id) {
+  try {
+    setError("");
+    const res = await fetch(`${API_URL}/habits/${id}/complete`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Failed to unmark completion");
+    }
+    setHabits((prev) =>
+      prev.map((habit) =>
+        habit.id === id ? { ...habit, completed_today: false } : habit
+      )
+    );
   } catch (error) {
     setError(error.message);
   }
@@ -111,7 +136,9 @@ async function updateHabit(id, updatedName, updatedDescription) {
 
     const savedHabit = await res.json();
     setHabits((prev) =>
-      prev.map((habit) => (habit.id === id ? savedHabit : habit))
+      prev.map((habit) =>
+        habit.id === id ? { ...habit, ...savedHabit } : habit
+      )
     );
   } catch (error) {
     setError(error.message);
@@ -141,6 +168,7 @@ async function updateHabit(id, updatedName, updatedDescription) {
         habits={habits}
         streaks={streaks}
         onComplete={completeHabit}
+        onUncomplete={uncompleteHabit}
         onShowStreak={fetchStreak}
         onDelete={deleteHabit}
         onEdit={updateHabit}

@@ -6,9 +6,18 @@ const router = express.Router();
 // Get all habits
 router.get('/', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT id, name, description, created_at
-       FROM habits
-       ORDER BY id ASC`);
+    const result = await pool.query(`SELECT h.id,
+     h.name,
+     h.description,
+     h.created_at,
+     EXISTS (
+     SELECT 1
+     FROM habit_logs hl
+     WHERE hl.habit_id = h.id
+       AND hl.completed_on = CURRENT_DATE
+     ) AS completed_today
+     FROM habits h
+     ORDER BY h.id ASC`);
         res.json(result.rows);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch habits" });
@@ -61,6 +70,32 @@ router.post("/:id/complete", async (req, res) => {
 
             res.status(500).json({ error: "Failed to complete habit" });
         }
+});
+
+router.delete("/:id/complete", async (req, res) => {
+  const habitId = Number(req.params.id);
+
+  if (Number.isNaN(habitId)) {
+    return res.status(400).json({ error: "Invalid habit ID" });
+  }
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM habit_logs
+       WHERE habit_id = $1
+         AND completed_on = CURRENT_DATE
+       RETURNING id`,
+      [habitId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Habit is not completed today" });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Failed to unmark completion" });
+  }
 });
 
 router.get("/:id/streak", async (req, res) => {
