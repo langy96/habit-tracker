@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { name, description } = req.body;
+  const { name, description = "" } = req.body;
 
     if (!name || name.trim().length === 0) {
         return res.status(400).json({ error: "Name is required" });
@@ -72,31 +72,24 @@ router.get("/:id/streak", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT completed_on
-       FROM habit_logs
-       WHERE habit_id = $1
-       ORDER BY completed_on DESC`,
+      `WITH RECURSIVE streak AS (
+         SELECT CURRENT_DATE AS day, 0 AS count
+         UNION ALL
+         SELECT day - 1, count + 1
+         FROM streak
+         WHERE EXISTS (
+           SELECT 1
+           FROM habit_logs hl
+           WHERE hl.habit_id = $1
+             AND hl.completed_on = streak.day
+         )
+       )
+       SELECT MAX(count) AS streak
+       FROM streak`,
       [habitId]
     );
 
-    const dates = result.rows.map((row) => row.completed_on.toISOString().slice(0, 10));
-    const dateSet = new Set(dates);
-
-    let streak = 0;
-    const cursor = new Date();
-    cursor.setHours(0, 0, 0, 0);
-
-    while (true) {
-      const key = cursor.toISOString().slice(0, 10);
-      if (dateSet.has(key)) {
-        streak += 1;
-        cursor.setDate(cursor.getDate() - 1);
-      } else {
-        break;
-      }
-    }
-
-    res.json({ habitId, streak });
+    res.json({ habitId, streak: Number(result.rows[0].streak || 0) });
   } catch (error) {
     res.status(500).json({ error: "Failed to calculate streak" });
   }
