@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import HabitForm from "./components/HabitForm";
+import HabitList from "./components/HabitList";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -78,36 +80,22 @@ async function completeHabit(id) {
     <main className="app">
       <h1>Habit Tracker</h1>
 
-      <form onSubmit={createHabit} className="habit-form">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Habit name"
-          required
-        />
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description (optional)"
-        />
-        <button type="submit">Add Habit</button>
-      </form>
+      <HabitForm
+        name={name}
+        description={description}
+        onNameChange={setName}
+        onDescriptionChange={setDescription}
+        onSubmit={createHabit}
+      />
 
       {error && <p className="error">{error}</p>}
 
-      <ul className="habit-list">
-        {habits.map((habit) => (
-          <li key={habit.id}>
-            <div>
-              <strong>{habit.name}</strong>
-              <p>{habit.description}</p>
-            </div>
-            <button onClick={() => completeHabit(habit.id)}>Mark Complete</button>
-            <button onClick={() => fetchStreak(habit.id)}>Show Streak</button>
-            {streaks[habit.id] !== undefined && <p>Streak: {streaks[habit.id]} day(s)</p>}
-          </li>
-        ))}
-      </ul>
+      <HabitList
+        habits={habits}
+        streaks={streaks}
+        onComplete={completeHabit}
+        onShowStreak={fetchStreak}
+      />
     </main>
   );
 }
