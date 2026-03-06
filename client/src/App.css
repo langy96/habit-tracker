@@ -83,6 +83,13 @@
   grid-template-columns: minmax(180px, 1fr) auto;
   gap: 0.9rem;
   align-items: start;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.habit-item:hover {
+  transform: translateY(-2px);
+  border-color: #bfd1f8;
+  box-shadow: 0 10px 24px rgba(26, 48, 95, 0.12);
 }
 
 .habit-copy strong {
@@ -123,6 +130,16 @@
   font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 100ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+.habit-actions button:hover {
+  filter: brightness(0.98);
+  box-shadow: 0 4px 10px rgba(24, 32, 51, 0.08);
+}
+
+.habit-actions button:active {
+  transform: translateY(1px) scale(0.99);
 }
 
 .habit-actions .btn-mark,
