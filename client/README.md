@@ -1,3 +1,29 @@
+## Current MVP Scope
+
+### Built
+- React frontend connected to Express API
+- PostgreSQL persistence with `habits` and `habit_logs`
+- Create habit, list habits, mark complete for today
+- Duplicate completion protection per day
+- Streak endpoint and streak display in UI
+- Basic security: `helmet`, CORS origin restriction, env vars
+- Minimal tests: backend health route + frontend render test
+
+### Not Yet Built
+- User accounts / JWT auth
+- Multi-user data isolation
+- Edit/delete habits polish
+- Full test coverage and CI pipeline
+- Production UX polish
+
+## How To Run
+
+### Backend
+```bash
+cd server
+npm install
+npm run dev
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
