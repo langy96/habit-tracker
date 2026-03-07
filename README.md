@@ -42,11 +42,6 @@ A simple full-stack PERN habit tracker project.
 - Expanded backend integration tests for auth and habit flows
 - GitHub Actions CI pipeline (lint + tests)
 
-### Future Improvements (Optional)
-
-- Deeper edge-case and UI interaction test coverage
-- End-to-end (E2E) test coverage
-
 ## Local Setup
 
 ### Prerequisites
