@@ -1,4 +1,4 @@
-# Habit Tracker (PERN MVP)
+# Habit Tracker (PERN Full-Stack App)
 
 A simple full-stack PERN habit tracker project.
 
@@ -21,7 +21,7 @@ A simple full-stack PERN habit tracker project.
 - Testing: Jest + Supertest (backend), Vitest + Testing Library (frontend)
 - Deployment: Render
 
-## Current MVP Scope
+## Current Project Scope
 
 ### Built
 
@@ -124,5 +124,5 @@ npm test -- --run
 
 ## Notes
 
-- This is currently an auth-enabled MVP with user-scoped habits.
-- Core MVP scope is complete and deployed.
+- This is an auth-enabled app with user-scoped habits.
+- Core project scope is complete and deployed.
