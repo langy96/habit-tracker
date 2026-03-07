@@ -2,9 +2,9 @@
 
 A simple full-stack PERN habit tracker project.
 
-## Mockup
+## Frontend Mockup
 
-![habit-tracker-mockup](image.png)
+![frontend-mockup](image.png)
 
 ## Live Demo
 
@@ -38,11 +38,11 @@ A simple full-stack PERN habit tracker project.
 - Responsive card-based UI with improved visual design
 - Basic security: `helmet`, CORS origin restriction, env vars
 - Minimal tests: backend health route + frontend render test
+- Per-habit completion history view
 
 ### Not Yet Built
 
 - Full test coverage and CI pipeline
-- Per-habit completion history view
 
 ## Local Setup
 
@@ -122,8 +122,9 @@ npm test -- --run
 - `POST /api/habits/:id/complete`
 - `DELETE /api/habits/:id/complete`
 - `GET /api/habits/:id/streak`
+- `GET /api/habits/:id/history`
 
 ## Notes
 
 - This is currently an auth-enabled MVP with user-scoped habits.
-- Main next step is deeper test coverage and completion history views.
+- Main next step is deeper test coverage and CI pipeline.
