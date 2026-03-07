@@ -180,17 +180,17 @@ router.get("/:id/history", async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT completed_on
+      `SELECT completed_at
        FROM habit_logs
        WHERE habit_id = $1
-       ORDER BY completed_on DESC
+       ORDER BY completed_at DESC
        LIMIT 10`,
       [habitId]
     );
 
     res.json({
       habitId,
-      history: result.rows.map((row) => row.completed_on),
+      history: result.rows.map((row) => row.completed_at),
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch completion history" });

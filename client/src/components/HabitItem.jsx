@@ -1,5 +1,20 @@
 import { useState } from "react";
 
+function formatHistoryDate(dateValue) {
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) {
+    return String(dateValue);
+  }
+
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function HabitItem({
   habit,
   streak,
@@ -93,7 +108,7 @@ function HabitItem({
             ) : (
               <ul>
                 {history.map((date) => (
-                  <li key={date}>{date}</li>
+                  <li key={date}>{formatHistoryDate(date)}</li>
                 ))}
               </ul>
             )}
