@@ -27,6 +27,8 @@ A simple full-stack PERN habit tracker project.
 
 - React frontend connected to Express API
 - PostgreSQL persistence with `habits` and `habit_logs`
+- Register/login authentication with JWT
+- Multi-user habit ownership and route protection
 - Create habit, list habits, mark complete for today
 - Unmark today's completion
 - Edit habit name/description
@@ -39,8 +41,6 @@ A simple full-stack PERN habit tracker project.
 
 ### Not Yet Built
 
-- User accounts / JWT auth
-- Multi-user data isolation
 - Full test coverage and CI pipeline
 - Per-habit completion history view
 
@@ -65,6 +65,13 @@ Create `server/.env`:
 PORT=4000
 DATABASE_URL=postgresql://<user>:<password>@localhost:5432/habit_tracker
 CORS_ORIGIN=http://localhost:5173,http://localhost:5174
+JWT_SECRET=<long-random-secret>
+```
+
+If your local database was created before auth and user ownership, run:
+
+```bash
+psql -U postgres -d habit_tracker -f ./server/src/db/migrations/001_add_user_id_to_habits.sql
 ```
 
 ### Frontend
@@ -99,8 +106,15 @@ npm test -- --run
 
 ## API Endpoints
 
+### Public
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 - `GET /api/health`
 - `GET /api/health/db`
+
+### Protected (require `Authorization: Bearer <token>`)
+
 - `GET /api/habits`
 - `POST /api/habits`
 - `PUT /api/habits/:id`
@@ -111,5 +125,5 @@ npm test -- --run
 
 ## Notes
 
-- This is currently a single-user MVP.
-- Main next step is auth (`register/login/JWT`) and per-user data isolation.
+- This is currently an auth-enabled MVP with user-scoped habits.
+- Main next step is deeper test coverage and completion history views.
