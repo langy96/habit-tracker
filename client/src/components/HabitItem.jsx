@@ -3,10 +3,13 @@ import { useState } from "react";
 function HabitItem({
   habit,
   streak,
+  history,
   onComplete,
   onUncomplete,
   onShowStreak,
   onHideStreak,
+  onShowHistory,
+  onHideHistory,
   onDelete,
   onEdit,
 }) {
@@ -66,6 +69,11 @@ function HabitItem({
       ) : (
         <button className="btn-show" onClick={() => onShowStreak(habit.id)}>Show Streak</button>
       )}
+      {history !== undefined ? (
+        <button className="btn-show" onClick={() => onHideHistory(habit.id)}>Hide History</button>
+      ) : (
+        <button className="btn-show" onClick={() => onShowHistory(habit.id)}>Show History</button>
+      )}
       {isEditing ? (
         <>
           <button className="btn-save" onClick={handleSave}>Save</button>
@@ -77,6 +85,20 @@ function HabitItem({
       <button className="btn-delete" onClick={() => onDelete(habit.id)}>Delete</button>
         </div>
       {streak !== undefined && <p className="habit-streak">Streak: {streak} day(s)</p>}
+        {history !== undefined && (
+          <div className="habit-history">
+            <p>Recent completions:</p>
+            {history.length === 0 ? (
+              <p className="habit-history-empty">No completion records yet.</p>
+            ) : (
+              <ul>
+                {history.map((date) => (
+                  <li key={date}>{date}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </li>
   );

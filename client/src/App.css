@@ -202,6 +202,37 @@
   font-weight: 700;
 }
 
+.habit-history {
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid #d9e5ff;
+  border-radius: 10px;
+  background: #f7faff;
+}
+
+.habit-history p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #34466f;
+  font-weight: 700;
+}
+
+.habit-history ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.habit-history li {
+  font-size: 0.82rem;
+  color: #44506d;
+}
+
+.habit-history-empty {
+  margin-top: 0.35rem !important;
+  font-weight: 500 !important;
+  color: #5d6680 !important;
+}
+
 @keyframes app-enter {
   from {
     opacity: 0;

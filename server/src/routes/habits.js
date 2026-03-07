@@ -158,6 +158,45 @@ router.get("/:id/streak", async (req, res) => {
   }
 });
 
+router.get("/:id/history", async (req, res) => {
+  const habitId = Number(req.params.id);
+  const userId = req.user.id;
+
+  if (Number.isNaN(habitId)) {
+    return res.status(400).json({ error: "Invalid habit ID" });
+  }
+
+  try {
+    const habitCheck = await pool.query(
+      `SELECT 1
+       FROM habits
+       WHERE id = $1
+         AND user_id = $2`,
+      [habitId, userId]
+    );
+
+    if (habitCheck.rowCount === 0) {
+      return res.status(404).json({ error: "Habit not found" });
+    }
+
+    const result = await pool.query(
+      `SELECT completed_on
+       FROM habit_logs
+       WHERE habit_id = $1
+       ORDER BY completed_on DESC
+       LIMIT 10`,
+      [habitId]
+    );
+
+    res.json({
+      habitId,
+      history: result.rows.map((row) => row.completed_on),
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch completion history" });
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   const habitId = Number(req.params.id);
   const userId = req.user.id;

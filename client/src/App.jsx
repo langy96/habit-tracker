@@ -15,6 +15,7 @@ function App() {
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
   const [streaks, setStreaks] = useState({});
+  const [historyByHabit, setHistoryByHabit] = useState({});
 
   const authHeaders = useCallback((extra = {}) => {
     return {
@@ -103,6 +104,33 @@ function hideStreak(id) {
   });
 }
 
+async function fetchHistory(id) {
+  try {
+    setError("");
+    const res = await fetch(`${API_URL}/habits/${id}/history`, {
+      headers: authHeaders(),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Failed to fetch history");
+    }
+
+    const data = await res.json();
+    setHistoryByHabit((prev) => ({ ...prev, [id]: data.history }));
+  } catch (historyError) {
+    setError(historyError.message);
+  }
+}
+
+function hideHistory(id) {
+  setHistoryByHabit((prev) => {
+    const next = { ...prev };
+    delete next[id];
+    return next;
+  });
+}
+
 async function createHabit(e) {
   e.preventDefault();
   try {
@@ -181,6 +209,11 @@ async function deleteHabit(id) {
 
     setHabits((prev) => prev.filter((habit) => habit.id !== id));
     setStreaks((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    setHistoryByHabit((prev) => {
       const next = { ...prev };
       delete next[id];
       return next;
@@ -287,10 +320,13 @@ async function updateHabit(id, updatedName, updatedDescription) {
       <HabitList
         habits={habits}
         streaks={streaks}
+        historyByHabit={historyByHabit}
         onComplete={completeHabit}
         onUncomplete={uncompleteHabit}
         onShowStreak={fetchStreak}
         onHideStreak={hideStreak}
+        onShowHistory={fetchHistory}
+        onHideHistory={hideHistory}
         onDelete={deleteHabit}
         onEdit={updateHabit}
       />
