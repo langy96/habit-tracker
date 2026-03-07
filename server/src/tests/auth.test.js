@@ -40,6 +40,14 @@ describe("Protected habits route", () => {
     expect(res.statusCode).toBe(401);
   });
 
+  it("returns 401 for malformed token", async () => {
+    const res = await request(app)
+      .get("/api/habits")
+      .set("Authorization", "Bearer not-a-real-token");
+
+    expect(res.statusCode).toBe(401);
+  });
+
   it("returns 200 with a valid token", async () => {
     const email = `protected_${Date.now()}@example.com`;
     const password = "secret123";
