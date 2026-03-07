@@ -39,4 +39,23 @@ describe("Protected habits route", () => {
     const res = await request(app).get("/api/habits");
     expect(res.statusCode).toBe(401);
   });
+
+  it("returns 200 with a valid token", async () => {
+    const email = `protected_${Date.now()}@example.com`;
+    const password = "secret123";
+
+    const registerRes = await request(app)
+      .post("/api/auth/register")
+      .send({ email, password });
+
+    expect(registerRes.statusCode).toBe(201);
+    const token = registerRes.body.token;
+
+    const res = await request(app)
+      .get("/api/habits")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
 });
