@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const pool = require("./db/pool");
 const habitsRouter = require("./routes/habits");
+const authRouter = require("./routes/auth");
 
 const app = express();
 const configuredOrigins = (process.env.CORS_ORIGIN || "")
@@ -32,6 +33,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use("/api/auth", authRouter);
 app.use("/api/habits", habitsRouter);
 
 app.get("/api/health", (req, res) => {
