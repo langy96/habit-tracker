@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import HabitForm from "./components/HabitForm";
 import HabitList from "./components/HabitList";
@@ -6,28 +6,87 @@ import HabitList from "./components/HabitList";
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [authMode, setAuthMode] = useState("login");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
   const [habits, setHabits] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
   const [streaks, setStreaks] = useState({});
 
-  async function fetchHabits() {
+  const authHeaders = useCallback((extra = {}) => {
+    return {
+      ...extra,
+      Authorization: `Bearer ${token}`,
+    };
+  }, [token]);
+
+  async function handleAuthSubmit(e) {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const endpoint = authMode === "register" ? "register" : "login";
+      const res = await fetch(`${API_URL}/auth/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: authEmail, password: authPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Authentication failed");
+      }
+
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+      setAuthPassword("");
+      setAuthEmail("");
+      setError("");
+    } catch (authError) {
+      setError(authError.message);
+    }
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    setToken("");
+    setHabits([]);
+    setStreaks({});
+    setName("");
+    setDescription("");
+    setError("");
+  }
+
+  const fetchHabits = useCallback(async () => {
     try {
       setError("");
-      const res = await fetch(`${API_URL}/habits`);
+      const res = await fetch(`${API_URL}/habits`, {
+        headers: authHeaders(),
+      });
+
+      if (res.status === 401) {
+        handleLogout();
+        throw new Error("Session expired. Please log in again.");
+      }
+
       if (!res.ok) throw new Error("Failed to load habits");
       const data = await res.json();
       setHabits(data);
     } catch (error) {
       setError(error.message);
     }
-}
+  }, [authHeaders]);
 
 async function fetchStreak(id) {
   try {
     setError("");
-    const res = await fetch(`${API_URL}/habits/${id}/streak`);
+    const res = await fetch(`${API_URL}/habits/${id}/streak`, {
+      headers: authHeaders(),
+    });
     if (!res.ok) throw new Error("Failed to fetch streak");
     const data = await res.json();
     setStreaks((prev) => ({ ...prev, [id]: data.streak }));
@@ -50,7 +109,7 @@ async function createHabit(e) {
     setError("");
     const res = await fetch(`${API_URL}/habits`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ name, description }),
     });
     if (!res.ok) {
@@ -69,6 +128,7 @@ async function completeHabit(id) {
     setError("");
     const res = await fetch(`${API_URL}/habits/${id}/complete`, {
       method: "POST",
+      headers: authHeaders(),
     });
     if (!res.ok) {
       const data = await res.json();
@@ -89,6 +149,7 @@ async function uncompleteHabit(id) {
     setError("");
     const res = await fetch(`${API_URL}/habits/${id}/complete`, {
       method: "DELETE",
+      headers: authHeaders(),
     });
 
     if (!res.ok) {
@@ -110,6 +171,7 @@ async function deleteHabit(id) {
     setError("");
     const res = await fetch(`${API_URL}/habits/${id}`, {
       method: "DELETE",
+      headers: authHeaders(),
     });
 
     if (!res.ok) {
@@ -133,7 +195,7 @@ async function updateHabit(id, updatedName, updatedDescription) {
     setError("");
     const res = await fetch(`${API_URL}/habits/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ name: updatedName, description: updatedDescription }),
     });
 
@@ -155,12 +217,62 @@ async function updateHabit(id, updatedName, updatedDescription) {
 }
 
   useEffect(() => {
+    if (!token) {
+      return;
+    }
+
     fetchHabits();
-  }, []);
+  }, [fetchHabits, token]);
+
+  if (!token) {
+    return (
+      <main className="app auth-shell">
+        <h1>Habit Tracker</h1>
+        <p className="auth-subtitle">
+          {authMode === "register" ? "Create your account" : "Welcome back"}
+        </p>
+
+        <form onSubmit={handleAuthSubmit} className="habit-form auth-form">
+          <input
+            type="email"
+            value={authEmail}
+            onChange={(e) => setAuthEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
+          <input
+            type="password"
+            value={authPassword}
+            onChange={(e) => setAuthPassword(e.target.value)}
+            placeholder="Password"
+            required
+            minLength={6}
+          />
+          <button type="submit">
+            {authMode === "register" ? "Create Account" : "Login"}
+          </button>
+        </form>
+
+        <button
+          className="auth-switch"
+          onClick={() => setAuthMode((prev) => (prev === "login" ? "register" : "login"))}
+        >
+          {authMode === "login"
+            ? "Need an account? Register"
+            : "Already have an account? Login"}
+        </button>
+
+        {error && <p className="error">{error}</p>}
+      </main>
+    );
+  }
 
   return (
     <main className="app">
-      <h1>Habit Tracker</h1>
+      <div className="app-top">
+        <h1>Habit Tracker</h1>
+        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+      </div>
 
       <HabitForm
         name={name}
