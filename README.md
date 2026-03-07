@@ -37,12 +37,15 @@ A simple full-stack PERN habit tracker project.
 - Streak endpoint with show/hide toggle in UI
 - Responsive card-based UI with improved visual design
 - Basic security: `helmet`, CORS origin restriction, env vars
-- Minimal tests: backend health route + frontend render test
+- Automated tests: backend health/auth/habits + frontend render test
 - Per-habit completion history view
+- Expanded backend integration tests for auth and habit flows
+- GitHub Actions CI pipeline (lint + tests)
 
-### Not Yet Built
+### Future Improvements (Optional)
 
-- Full test coverage and CI pipeline
+- Deeper edge-case and UI interaction test coverage
+- End-to-end (E2E) test coverage
 
 ## Local Setup
 
@@ -127,4 +130,4 @@ npm test -- --run
 ## Notes
 
 - This is currently an auth-enabled MVP with user-scoped habits.
-- Main next step is deeper test coverage and CI pipeline.
+- Core MVP scope is complete and deployed.
